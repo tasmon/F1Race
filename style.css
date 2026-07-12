@@ -6,7 +6,7 @@ body {
   color: #fff;
   width: 240px;
   height: 320px;
-  overflow: hidden; /* Prevent scrolling */
+  overflow: hidden;
 }
 
 .screen {
