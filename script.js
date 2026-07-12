@@ -1,16 +1,17 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-let lanes = 4;        // default minimum lanes
+let lanes = 4;        // default lanes
 let level = 1;        // default Easy
 let muted = false;
 let paused = false;
-let lives = 5;        // default 5 lives
+let lives = 3;        // start with 3 lives
 let highScores = JSON.parse(localStorage.getItem("f1scores")) || [];
 
 let player, enemies, score, roadOffset = 0;
 let running = false;
 let lastTime = 0;
+let lifeTimer;
 
 function startGame() {
   hideAllScreens();
@@ -28,13 +29,19 @@ function startGame() {
   player = { lane: Math.floor(lanes / 2), y: 250, width: 18, height: 32 }; // smaller car
   enemies = [];
   score = 0;
-  lives = 5;
+  lives = 3;
   paused = false;
   roadOffset = 0;
   running = true;
   lastTime = performance.now();
 
   if (!muted) playSound("start");
+
+  // Life regeneration every 30s
+  clearInterval(lifeTimer);
+  lifeTimer = setInterval(() => {
+    if (running && lives < 5) lives++;
+  }, 30000);
 
   requestAnimationFrame(gameLoop);
 }
@@ -52,7 +59,7 @@ function updateGame(delta) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Road theme: moving lane markers
-  roadOffset += 40 * delta; // road scroll speed (slow)
+  roadOffset += 40 * delta; // road scroll speed
   const laneWidth = canvas.width / lanes;
   ctx.strokeStyle = "#555";
   for (let i = 1; i < lanes; i++) {
@@ -132,6 +139,7 @@ function drawCar(x, y, color) {
 
 function endGame() {
   running = false;
+  clearInterval(lifeTimer);
   highScores.push(score);
   highScores.sort((a,b) => b-a);
   highScores = highScores.slice(0,5);
@@ -185,6 +193,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "5") paused = !paused;
   if (e.key === "1") {
     running = false;
+    clearInterval(lifeTimer);
     backToMenu();
   }
 });
