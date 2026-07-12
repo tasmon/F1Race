@@ -4,14 +4,16 @@ const ctx = canvas.getContext("2d");
 let lanes = 3;
 let level = 2;
 let muted = false;
+let paused = false;
 let highScores = JSON.parse(localStorage.getItem("f1scores")) || [];
 
-let player, enemies, score, gameInterval;
+let player, enemies, score, gameInterval, roadOffset = 0;
 
 function startGame() {
   hideAllScreens();
   canvas.classList.remove("hidden");
 
+  // Strict 240x320
   canvas.width = 240;
   canvas.height = 320;
 
@@ -21,6 +23,8 @@ function startGame() {
   player = { lane: Math.floor(lanes / 2), y: 250, width: 28, height: 50 };
   enemies = [];
   score = 0;
+  paused = false;
+  roadOffset = 0;
 
   if (!muted) playSound("start");
 
@@ -29,17 +33,21 @@ function startGame() {
 }
 
 function updateGame() {
+  if (paused) return;
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // Road theme: moving lane markers
+  roadOffset += 4;
   const laneWidth = canvas.width / lanes;
-
-  // Draw lanes
   ctx.strokeStyle = "#555";
   for (let i = 1; i < lanes; i++) {
-    ctx.beginPath();
-    ctx.moveTo(i * laneWidth, 0);
-    ctx.lineTo(i * laneWidth, canvas.height);
-    ctx.stroke();
+    for (let y = -20; y < canvas.height; y += 40) {
+      ctx.beginPath();
+      ctx.moveTo(i * laneWidth, y + (roadOffset % 40));
+      ctx.lineTo(i * laneWidth, y + 20 + (roadOffset % 40));
+      ctx.stroke();
+    }
   }
 
   // Draw player
@@ -76,15 +84,10 @@ function updateGame() {
 }
 
 function drawCar(x, y, color) {
-  // Body
   ctx.fillStyle = color;
   ctx.fillRect(x, y, 28, 50);
-
-  // Windshield
   ctx.fillStyle = "#88f";
   ctx.fillRect(x+4, y+10, 20, 10);
-
-  // Wheels
   ctx.fillStyle = "#000";
   ctx.fillRect(x-4, y+5, 4, 10);
   ctx.fillRect(x+28, y+5, 4, 10);
@@ -103,36 +106,18 @@ function endGame() {
   backToMenu();
 }
 
-function showSettings() {
-  hideAllScreens();
-  document.getElementById("settings").classList.remove("hidden");
-}
-
-function showHighScores() {
-  hideAllScreens();
-  document.getElementById("highscores").classList.remove("hidden");
+function showSettings() { hideAllScreens(); document.getElementById("settings").classList.remove("hidden"); }
+function showHighScores() { 
+  hideAllScreens(); 
+  document.getElementById("highscores").classList.remove("hidden"); 
   const list = document.getElementById("scoreList");
   list.innerHTML = "";
-  highScores.forEach(s => {
-    const li = document.createElement("li");
-    li.textContent = s;
-    list.appendChild(li);
-  });
+  highScores.forEach(s => { const li = document.createElement("li"); li.textContent = s; list.appendChild(li); });
 }
-
-function backToMenu() {
-  hideAllScreens();
-  document.getElementById("menu").classList.remove("hidden");
-}
-
-function hideAllScreens() {
-  document.querySelectorAll(".screen").forEach(el => el.classList.add("hidden"));
-  canvas.classList.add("hidden");
-}
-
-function toggleMute() {
-  muted = !muted;
-}
+function showHelp() { hideAllScreens(); document.getElementById("help").classList.remove("hidden"); }
+function backToMenu() { hideAllScreens(); document.getElementById("menu").classList.remove("hidden"); }
+function hideAllScreens() { document.querySelectorAll(".screen").forEach(el => el.classList.add("hidden")); canvas.classList.add("hidden"); }
+function toggleMute() { muted = !muted; }
 
 function playSound(type) {
   if (muted) return;
@@ -145,12 +130,21 @@ function playSound(type) {
   oscillator.stop(ctxAudio.currentTime + 0.2);
 }
 
-// Keypad controls (T9: 2=up, 4=left, 6=right, 8=down)
+// Keypad controls (T9)
 document.addEventListener("keydown", e => {
   const laneWidth = canvas.width / lanes;
   if (e.key === "4" && player.lane > 0) player.lane--;
   if (e.key === "6" && player.lane < lanes-1) player.lane++;
   if (e.key === "2" && player.y > 0) player.y -= 10;
   if (e.key === "8" && player.y < canvas.height - player.height) player.y += 10;
+
+  // Pause/Play
+  if (e.key === "5") paused = !paused;
+
+  // Back to Menu
+  if (e.key === "1") {
+    clearInterval(gameInterval);
+    backToMenu();
+  }
 });
 

@@ -12,6 +12,7 @@
     <button onclick="startGame()">▶ Start Game</button>
     <button onclick="showSettings()">⚙ Settings</button>
     <button onclick="showHighScores()">🏆 High Scores</button>
+    <button onclick="showHelp()">❓ Help</button>
   </div>
 
   <div id="settings" class="screen hidden">
@@ -37,6 +38,19 @@
   <div id="highscores" class="screen hidden">
     <h2>High Scores</h2>
     <ul id="scoreList"></ul>
+    <button onclick="backToMenu()">⬅ Back</button>
+  </div>
+
+  <div id="help" class="screen hidden">
+    <h2>Controls</h2>
+    <ul>
+      <li>2 = Move Up</li>
+      <li>8 = Move Down</li>
+      <li>4 = Move Left</li>
+      <li>6 = Move Right</li>
+      <li>5 = Pause/Play</li>
+      <li>1 = Back to Menu</li>
+    </ul>
     <button onclick="backToMenu()">⬅ Back</button>
   </div>
 
