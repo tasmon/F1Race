@@ -8,7 +8,8 @@ let paused = false;
 let lives = 3;
 let highScores = JSON.parse(localStorage.getItem("f1scores")) || [];
 
-let player, enemies, score, gameInterval, roadOffset = 0;
+let player, enemies, score, roadOffset = 0;
+let running = false;
 
 function startGame() {
   hideAllScreens();
@@ -27,18 +28,24 @@ function startGame() {
   lives = 3;
   paused = false;
   roadOffset = 0;
+  running = true;
 
   if (!muted) playSound("start");
 
-  clearInterval(gameInterval);
-  gameInterval = setInterval(updateGame, 1000 / 30);
+  requestAnimationFrame(gameLoop);
+}
+
+function gameLoop() {
+  if (!running) return;
+  updateGame();
+  requestAnimationFrame(gameLoop);
 }
 
 function updateGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Road theme: moving lane markers
-  roadOffset += 4;
+  roadOffset += 2; // smoother speed
   const laneWidth = canvas.width / lanes;
   ctx.strokeStyle = "#555";
   for (let i = 1; i < lanes; i++) {
@@ -55,7 +62,7 @@ function updateGame() {
 
   if (!paused) {
     // Spawn enemies
-    if (Math.random() < 0.03 * level) {
+    if (Math.random() < 0.02 * level) {
       enemies.push({
         lane: Math.floor(Math.random() * lanes),
         y: -60,
@@ -66,7 +73,7 @@ function updateGame() {
 
     // Move enemies
     for (let e of enemies) {
-      e.y += 2 + level;
+      e.y += 1.5 + level; // smoother movement
       drawCar(e.lane * laneWidth + laneWidth/2 - e.width/2, e.y, "red");
 
       if (e.lane === player.lane && e.y + e.height > player.y && e.y < player.y + player.height) {
@@ -110,7 +117,7 @@ function drawCar(x, y, color) {
 }
 
 function endGame() {
-  clearInterval(gameInterval);
+  running = false;
   highScores.push(score);
   highScores.sort((a,b) => b-a);
   highScores = highScores.slice(0,5);
@@ -146,13 +153,9 @@ function playSound(type) {
 
 // Keypad controls (T9) — only when game is active
 document.addEventListener("keydown", e => {
-  // If game not running, let buttons work normally
   if (canvas.classList.contains("hidden")) return;
 
-  // Prevent scrolling during gameplay
-  if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","2","4","6","8","5","1"].includes(e.key)) {
-    e.preventDefault();
-  }
+  if (["2","4","6","8","5","1"].includes(e.key)) e.preventDefault();
 
   const laneWidth = canvas.width / lanes;
   if (e.key === "4" && player.lane > 0) player.lane--;
@@ -165,12 +168,9 @@ document.addEventListener("keydown", e => {
     }
   }
 
-  // Pause/Play
   if (e.key === "5") paused = !paused;
-
-  // Back to Menu
   if (e.key === "1") {
-    clearInterval(gameInterval);
+    running = false;
     backToMenu();
   }
 });
