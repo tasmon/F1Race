@@ -25,7 +25,7 @@ function startGame() {
   if (lanes > 8) lanes = 8;
   level = parseInt(document.getElementById("levelSelect").value || 1);
 
-  player = { lane: Math.floor(lanes / 2), y: 250, width: 20, height: 36 }; // smaller car
+  player = { lane: Math.floor(lanes / 2), y: 250, width: 18, height: 32 }; // smaller car
   enemies = [];
   score = 0;
   lives = 5;
@@ -52,7 +52,7 @@ function updateGame(delta) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Road theme: moving lane markers
-  roadOffset += 100 * delta; // pixels per second
+  roadOffset += 40 * delta; // road scroll speed (slow)
   const laneWidth = canvas.width / lanes;
   ctx.strokeStyle = "#555";
   for (let i = 1; i < lanes; i++) {
@@ -72,15 +72,22 @@ function updateGame(delta) {
     if (Math.random() < 0.02 * level) {
       enemies.push({
         lane: Math.floor(Math.random() * lanes),
-        y: -50,
-        width: 20,
-        height: 36
+        y: -40,
+        width: 18,
+        height: 32
       });
     }
 
+    // Speed limits per difficulty
+    const enemySpeed = {
+      1: 25,   // Easy: super slow
+      2: 50,   // Medium: moderately slow
+      3: 75    // Hard: medium easy
+    }[level] || 25;
+
     // Move enemies
     for (let e of enemies) {
-      e.y += (60 + level * 40) * delta; // pixels per second
+      e.y += enemySpeed * delta;
       drawCar(e.lane * laneWidth + laneWidth/2 - e.width/2, e.y, "red");
 
       if (e.lane === player.lane && e.y + e.height > player.y && e.y < player.y + player.height) {
@@ -113,14 +120,14 @@ function updateGame(delta) {
 
 function drawCar(x, y, color) {
   ctx.fillStyle = color;
-  ctx.fillRect(x, y, 20, 36);
+  ctx.fillRect(x, y, 18, 32);
   ctx.fillStyle = "#88f";
-  ctx.fillRect(x+3, y+8, 14, 8);
+  ctx.fillRect(x+3, y+6, 12, 6);
   ctx.fillStyle = "#000";
-  ctx.fillRect(x-3, y+4, 3, 8);
-  ctx.fillRect(x+20, y+4, 3, 8);
-  ctx.fillRect(x-3, y+24, 3, 8);
-  ctx.fillRect(x+20, y+24, 3, 8);
+  ctx.fillRect(x-3, y+4, 3, 6);
+  ctx.fillRect(x+18, y+4, 3, 6);
+  ctx.fillRect(x-3, y+22, 3, 6);
+  ctx.fillRect(x+18, y+22, 3, 6);
 }
 
 function endGame() {
