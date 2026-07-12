@@ -7,7 +7,7 @@ Features include multiple lanes (2–6), levels, high scores, mute/unmute, and T
 1. Go to [CloudPhone Developer Page](https://www.cloudfone.com/my).  
 2. Select **Add Widget**.  
 3. Paste this Start URL:  
-   `https://tasmon.github.io/F1Race/index.html`  
+   `https://tasmon.github.io/F1Race`  
 4. Upload icons if required.  
 5. Save and refresh — **F1Race** will appear on your CloudPhone.
 
