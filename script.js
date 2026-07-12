@@ -75,8 +75,14 @@ function updateGame(delta) {
   drawCar(player.lane * laneWidth + laneWidth/2 - player.width/2, player.y, "cyan");
 
   if (!paused) {
-    // Spawn enemies at fixed rate
-    if (Math.random() < 0.02 * level) {
+    // Spawn enemies with lower probability
+    const spawnRate = {
+      1: 0.01,   // Easy: very few cars
+      2: 0.02,   // Medium: moderate traffic
+      3: 0.03    // Hard: steady traffic
+    }[level] || 0.01;
+
+    if (Math.random() < spawnRate) {
       enemies.push({
         lane: Math.floor(Math.random() * lanes),
         y: -40,
