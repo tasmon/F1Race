@@ -5,6 +5,7 @@ let lanes = 3;
 let level = 2;
 let muted = false;
 let paused = false;
+let lives = 3;
 let highScores = JSON.parse(localStorage.getItem("f1scores")) || [];
 
 let player, enemies, score, gameInterval, roadOffset = 0;
@@ -23,6 +24,7 @@ function startGame() {
   player = { lane: Math.floor(lanes / 2), y: 250, width: 28, height: 50 };
   enemies = [];
   score = 0;
+  lives = 3;
   paused = false;
   roadOffset = 0;
 
@@ -69,18 +71,25 @@ function updateGame() {
     drawCar(e.lane * laneWidth + laneWidth/2 - e.width/2, e.y, "red");
 
     if (e.lane === player.lane && e.y + e.height > player.y && e.y < player.y + player.height) {
-      endGame();
-      return;
+      lives--;
+      if (!muted) playSound("crash");
+      enemies = enemies.filter(en => en !== e);
+      if (lives <= 0) {
+        endGame();
+        return;
+      }
     }
   }
 
   enemies = enemies.filter(e => e.y < canvas.height);
 
-  // Score
-  score++;
+  // HUD: Score + Lives
   ctx.fillStyle = "#fff";
   ctx.font = "12px Segoe UI";
   ctx.fillText("Score: " + score, 10, 20);
+  ctx.fillText("Lives: " + lives, 180, 20);
+
+  score++;
 }
 
 function drawCar(x, y, color) {
@@ -97,12 +106,11 @@ function drawCar(x, y, color) {
 
 function endGame() {
   clearInterval(gameInterval);
-  if (!muted) playSound("crash");
   highScores.push(score);
   highScores.sort((a,b) => b-a);
   highScores = highScores.slice(0,5);
   localStorage.setItem("f1scores", JSON.stringify(highScores));
-  alert("Game Over! Score: " + score);
+  alert("Game Over! Final Score: " + score);
   backToMenu();
 }
 
@@ -115,6 +123,7 @@ function showHighScores() {
   highScores.forEach(s => { const li = document.createElement("li"); li.textContent = s; list.appendChild(li); });
 }
 function showHelp() { hideAllScreens(); document.getElementById("help").classList.remove("hidden"); }
+function showAbout() { hideAllScreens(); document.getElementById("about").classList.remove("hidden"); }
 function backToMenu() { hideAllScreens(); document.getElementById("menu").classList.remove("hidden"); }
 function hideAllScreens() { document.querySelectorAll(".screen").forEach(el => el.classList.add("hidden")); canvas.classList.add("hidden"); }
 function toggleMute() { muted = !muted; }

@@ -13,6 +13,7 @@
     <button onclick="showSettings()">⚙ Settings</button>
     <button onclick="showHighScores()">🏆 High Scores</button>
     <button onclick="showHelp()">❓ Help</button>
+    <button onclick="showAbout()">ℹ About</button>
   </div>
 
   <div id="settings" class="screen hidden">
@@ -22,6 +23,8 @@
         <option value="2">2</option>
         <option value="3" selected>3</option>
         <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
       </select>
     </label>
     <label>Level:
@@ -51,6 +54,13 @@
       <li>5 = Pause/Play</li>
       <li>1 = Back to Menu</li>
     </ul>
+    <button onclick="backToMenu()">⬅ Back</button>
+  </div>
+
+  <div id="about" class="screen hidden">
+    <h2>About</h2>
+    <p><strong>Game:</strong> F1 Race for Cloud Phone</p>
+    <p><strong>Developer:</strong> Tasmon Islam</p>
     <button onclick="backToMenu()">⬅ Back</button>
   </div>
 
