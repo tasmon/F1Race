@@ -35,8 +35,6 @@ function startGame() {
 }
 
 function updateGame() {
-  if (paused) return;
-
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Road theme: moving lane markers
@@ -55,41 +53,48 @@ function updateGame() {
   // Draw player
   drawCar(player.lane * laneWidth + laneWidth/2 - player.width/2, player.y, "cyan");
 
-  // Spawn enemies
-  if (Math.random() < 0.03 * level) {
-    enemies.push({
-      lane: Math.floor(Math.random() * lanes),
-      y: -60,
-      width: 28,
-      height: 50
-    });
-  }
+  if (!paused) {
+    // Spawn enemies
+    if (Math.random() < 0.03 * level) {
+      enemies.push({
+        lane: Math.floor(Math.random() * lanes),
+        y: -60,
+        width: 28,
+        height: 50
+      });
+    }
 
-  // Move enemies
-  for (let e of enemies) {
-    e.y += 2 + level;
-    drawCar(e.lane * laneWidth + laneWidth/2 - e.width/2, e.y, "red");
+    // Move enemies
+    for (let e of enemies) {
+      e.y += 2 + level;
+      drawCar(e.lane * laneWidth + laneWidth/2 - e.width/2, e.y, "red");
 
-    if (e.lane === player.lane && e.y + e.height > player.y && e.y < player.y + player.height) {
-      lives--;
-      if (!muted) playSound("crash");
-      enemies = enemies.filter(en => en !== e);
-      if (lives <= 0) {
-        endGame();
-        return;
+      if (e.lane === player.lane && e.y + e.height > player.y && e.y < player.y + player.height) {
+        lives--;
+        if (!muted) playSound("crash");
+        enemies = enemies.filter(en => en !== e);
+        if (lives <= 0) {
+          endGame();
+          return;
+        }
       }
     }
+    enemies = enemies.filter(e => e.y < canvas.height);
+    score++;
+  } else {
+    // Pause overlay
+    ctx.fillStyle = "rgba(0,0,0,0.5)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#fff";
+    ctx.font = "20px Segoe UI";
+    ctx.fillText("Paused", 90, 160);
   }
-
-  enemies = enemies.filter(e => e.y < canvas.height);
 
   // HUD: Score + Lives
   ctx.fillStyle = "#fff";
   ctx.font = "12px Segoe UI";
   ctx.fillText("Score: " + score, 10, 20);
   ctx.fillText("Lives: " + lives, 180, 20);
-
-  score++;
 }
 
 function drawCar(x, y, color) {
@@ -141,11 +146,20 @@ function playSound(type) {
 
 // Keypad controls (T9)
 document.addEventListener("keydown", e => {
+  if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","2","4","6","8","5","1"].includes(e.key)) {
+    e.preventDefault(); // prevent scrolling
+  }
+
   const laneWidth = canvas.width / lanes;
   if (e.key === "4" && player.lane > 0) player.lane--;
   if (e.key === "6" && player.lane < lanes-1) player.lane++;
   if (e.key === "2" && player.y > 0) player.y -= 10;
-  if (e.key === "8" && player.y < canvas.height - player.height) player.y += 10;
+  if (e.key === "8") {
+    player.y += 10;
+    if (player.y > canvas.height - player.height) {
+      player.y = canvas.height - player.height; // clamp bottom
+    }
+  }
 
   // Pause/Play
   if (e.key === "5") paused = !paused;

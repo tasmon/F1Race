@@ -4,6 +4,9 @@ body {
   font-family: "Segoe UI", Arial, sans-serif;
   background: #111;
   color: #fff;
+  width: 240px;
+  height: 320px;
+  overflow: hidden; /* Prevent scrolling */
 }
 
 .screen {
