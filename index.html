@@ -2,63 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>F1 Race CloudPhone</title>
   <meta name="viewport" content="width=240, height=320, initial-scale=1.0">
-  <title>4 in a Row</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h2>4 in a Row</h2>
-  </header>
+  <div id="menu" class="screen">
+    <h1>F1 Race</h1>
+    <button onclick="startGame()">▶ Start Game</button>
+    <button onclick="showSettings()">⚙ Settings</button>
+    <button onclick="showHighScores()">🏆 High Scores</button>
+    <button onclick="showHelp()">❓ Help</button>
+    <button onclick="showAbout()">ℹ About</button>
+  </div>
 
-  <!-- Home/Menu -->
-  <section id="menu" class="page active">
-    <button class="md-btn" onclick="startGame('player')">Vs Player</button>
-    <button class="md-btn" onclick="selectDifficulty()">Vs Computer</button>
-  </section>
+  <div id="settings" class="screen hidden">
+    <h2>Settings</h2>
+    <label>Lanes:
+      <select id="laneSelect">
+        <option value="2">2</option>
+        <option value="3" selected>3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </label>
+    <label>Level:
+      <select id="levelSelect">
+        <option value="1">Easy</option>
+        <option value="2" selected>Medium</option>
+        <option value="3">Hard</option>
+      </select>
+    </label>
+    <button onclick="toggleMute()">🔊 Mute/Unmute</button>
+    <button onclick="backToMenu()">⬅ Back</button>
+  </div>
 
-  <!-- Difficulty -->
-  <section id="difficulty" class="page">
-    <h3>Select Difficulty</h3>
-    <button class="md-btn" onclick="startGame('computer','easy')">Easy</button>
-    <button class="md-btn" onclick="startGame('computer','medium')">Medium</button>
-    <button class="md-btn" onclick="startGame('computer','hard')">Hard</button>
-  </section>
+  <div id="highscores" class="screen hidden">
+    <h2>High Scores</h2>
+    <ul id="scoreList"></ul>
+    <button onclick="backToMenu()">⬅ Back</button>
+  </div>
 
-  <!-- Game -->
-  <section id="gamePage" class="page">
-    <canvas id="gameCanvas" width="240" height="240"></canvas>
-    <p id="status"></p>
-    <button id="reset" class="md-btn" onclick="resetGame()">Reset</button>
-  </section>
-
-  <!-- Help -->
-  <section id="help" class="page">
-    <h3>Help</h3>
-    <p>Controls:</p>
+  <div id="help" class="screen hidden">
+    <h2>Controls</h2>
     <ul>
-      <li>2 = Up</li>
-      <li>4 = Left</li>
-      <li>6 = Right</li>
-      <li>8 = Down</li>
-      <li>5 = Drop disc</li>
+      <li>2 = Move Up</li>
+      <li>8 = Move Down</li>
+      <li>4 = Move Left</li>
+      <li>6 = Move Right</li>
+      <li>5 = Pause/Play</li>
+      <li>1 = Back to Menu</li>
     </ul>
-  </section>
+    <button onclick="backToMenu()">⬅ Back</button>
+  </div>
 
-  <!-- About -->
-  <section id="about" class="page">
-    <h3>About</h3>
-    <p>Developer: <strong>Tasmon Islam</strong></p>
-  </section>
+  <div id="about" class="screen hidden">
+    <h2>About</h2>
+    <p><strong>Game:</strong> F1 Race for Cloud Phone</p>
+    <p><strong>Developer:</strong> Tasmon Islam</p>
+    <button onclick="backToMenu()">⬅ Back</button>
+  </div>
 
-  <!-- Bottom navigation -->
-  <footer>
-    <button onclick="showSection('menu')">Home</button>
-    <button onclick="showSection('help')">Help</button>
-    <button onclick="showSection('about')">About</button>
-  </footer>
+  <canvas id="gameCanvas" width="240" height="320" class="hidden"></canvas>
 
-  <script src="script.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
 
