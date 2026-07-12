@@ -146,9 +146,13 @@ function playSound(type) {
 
 // Keypad controls (T9)
 document.addEventListener("keydown", e => {
+  // Prevent scrolling in menus
   if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","2","4","6","8","5","1"].includes(e.key)) {
-    e.preventDefault(); // prevent scrolling
+    e.preventDefault();
   }
+
+  // Only allow controls when game is visible
+  if (canvas.classList.contains("hidden")) return;
 
   const laneWidth = canvas.width / lanes;
   if (e.key === "4" && player.lane > 0) player.lane--;
