@@ -14,6 +14,12 @@ function startGame() {
   document.getElementById("highscores").classList.add("hidden");
   canvas.classList.remove("hidden");
 
+  // Force fullscreen 240x320
+  canvas.width = 240;
+  canvas.height = 320;
+  canvas.style.width = "240px";
+  canvas.style.height = "320px";
+
   lanes = parseInt(document.getElementById("laneSelect").value);
   level = parseInt(document.getElementById("levelSelect").value);
 
