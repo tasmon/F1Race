@@ -6,18 +6,20 @@ let level = 1;        // default Easy
 let muted = false;
 let paused = false;
 let lives = 3;        // start with 3 lives
+let flyovers = 3;     // start with 3 flyover bonuses
 let highScores = JSON.parse(localStorage.getItem("f1scores")) || [];
 
 let player, enemies, score, roadOffset = 0;
 let running = false;
 let lastTime = 0;
-let lifeTimer;
+let lifeTimer, flyoverTimer;
+let flying = false;
+let flyStart = 0;
 
 function startGame() {
   hideAllScreens();
   canvas.classList.remove("hidden");
 
-  // Strict 240x320
   canvas.width = 240;
   canvas.height = 320;
 
@@ -26,10 +28,11 @@ function startGame() {
   if (lanes > 8) lanes = 8;
   level = parseInt(document.getElementById("levelSelect").value || 1);
 
-  player = { lane: Math.floor(lanes / 2), y: 250, width: 18, height: 32 }; // smaller car
+  player = { lane: Math.floor(lanes / 2), y: 250, width: 18, height: 32 };
   enemies = [];
   score = 0;
   lives = 3;
+  flyovers = 3;
   paused = false;
   roadOffset = 0;
   running = true;
@@ -37,29 +40,32 @@ function startGame() {
 
   if (!muted) playSound("start");
 
-  // Life regeneration every 30s
   clearInterval(lifeTimer);
   lifeTimer = setInterval(() => {
     if (running && lives < 5) lives++;
   }, 30000);
+
+  clearInterval(flyoverTimer);
+  flyoverTimer = setInterval(() => {
+    if (running && flyovers < 5) flyovers++;
+  }, 15000);
 
   requestAnimationFrame(gameLoop);
 }
 
 function gameLoop(timestamp) {
   if (!running) return;
-  const delta = (timestamp - lastTime) / 1000; // seconds since last frame
+  const delta = (timestamp - lastTime) / 1000;
   lastTime = timestamp;
 
-  updateGame(delta);
+  updateGame(delta, timestamp);
   requestAnimationFrame(gameLoop);
 }
 
-function updateGame(delta) {
+function updateGame(delta, timestamp) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Road theme: moving lane markers
-  roadOffset += 40 * delta; // road scroll speed
+  roadOffset += 40 * delta;
   const laneWidth = canvas.width / lanes;
   ctx.strokeStyle = "#555";
   for (let i = 1; i < lanes; i++) {
@@ -71,39 +77,22 @@ function updateGame(delta) {
     }
   }
 
-  // Draw player
-  drawCar(player.lane * laneWidth + laneWidth/2 - player.width/2, player.y, "cyan");
+  if (flying && timestamp - flyStart > 2000) flying = false;
+  drawCar(player.lane * laneWidth + laneWidth/2 - player.width/2, player.y, flying ? "yellow" : "cyan");
 
   if (!paused) {
-    // Spawn enemies with lower probability
-    const spawnRate = {
-      1: 0.01,   // Easy: very few cars
-      2: 0.02,   // Medium: moderate traffic
-      3: 0.03    // Hard: steady traffic
-    }[level] || 0.01;
-
+    const spawnRate = {1:0.01, 2:0.02, 3:0.03}[level] || 0.01;
     if (Math.random() < spawnRate) {
-      enemies.push({
-        lane: Math.floor(Math.random() * lanes),
-        y: -40,
-        width: 18,
-        height: 32
-      });
+      enemies.push({ lane: Math.floor(Math.random() * lanes), y: -40, width: 18, height: 32 });
     }
 
-    // Speed limits per difficulty
-    const enemySpeed = {
-      1: 25,   // Easy: super slow
-      2: 50,   // Medium: moderately slow
-      3: 75    // Hard: medium easy
-    }[level] || 25;
+    const enemySpeed = {1:25, 2:50, 3:75}[level] || 25;
 
-    // Move enemies
     for (let e of enemies) {
       e.y += enemySpeed * delta;
       drawCar(e.lane * laneWidth + laneWidth/2 - e.width/2, e.y, "red");
 
-      if (e.lane === player.lane && e.y + e.height > player.y && e.y < player.y + player.height) {
+      if (!flying && e.lane === player.lane && e.y + e.height > player.y && e.y < player.y + player.height) {
         lives--;
         if (!muted) playSound("crash");
         enemies = enemies.filter(en => en !== e);
@@ -116,7 +105,6 @@ function updateGame(delta) {
     enemies = enemies.filter(e => e.y < canvas.height);
     score++;
   } else {
-    // Pause overlay
     ctx.fillStyle = "rgba(0,0,0,0.5)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#fff";
@@ -124,11 +112,11 @@ function updateGame(delta) {
     ctx.fillText("Paused", 90, 160);
   }
 
-  // HUD: Score + Lives
   ctx.fillStyle = "#fff";
   ctx.font = "12px Segoe UI";
   ctx.fillText("Score: " + score, 10, 20);
   ctx.fillText("Lives: " + lives, 180, 20);
+  ctx.fillText("Flyovers: " + flyovers, 90, 20);
 }
 
 function drawCar(x, y, color) {
@@ -146,6 +134,7 @@ function drawCar(x, y, color) {
 function endGame() {
   running = false;
   clearInterval(lifeTimer);
+  clearInterval(flyoverTimer);
   highScores.push(score);
   highScores.sort((a,b) => b-a);
   highScores = highScores.slice(0,5);
@@ -179,11 +168,10 @@ function playSound(type) {
   oscillator.stop(ctxAudio.currentTime + 0.2);
 }
 
-// Keypad controls (T9) — only when game is active
 document.addEventListener("keydown", e => {
   if (canvas.classList.contains("hidden")) return;
 
-  if (["2","4","6","8","5","1"].includes(e.key)) e.preventDefault();
+  if (["0","2","4","6","8","5","1"].includes(e.key)) e.preventDefault();
 
   const laneWidth = canvas.width / lanes;
   if (e.key === "4" && player.lane > 0) player.lane--;
@@ -192,7 +180,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "8") {
     player.y += 10;
     if (player.y > canvas.height - player.height) {
-      player.y = canvas.height - player.height; // clamp bottom
+      player.y = canvas.height - player.height;
     }
   }
 
@@ -200,6 +188,14 @@ document.addEventListener("keydown", e => {
   if (e.key === "1") {
     running = false;
     clearInterval(lifeTimer);
+    clearInterval(flyoverTimer);
     backToMenu();
+  }
+
+  // Flyover ability
+  if (e.key === "0" && flyovers > 0 && !flying) {
+    flyovers--;
+    flying = true;
+    flyStart = performance.now();
   }
 });
