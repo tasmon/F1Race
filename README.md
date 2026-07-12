@@ -13,3 +13,6 @@ Features include multiple lanes (2–6), levels, high scores, mute/unmute, and T
 4. Upload icons if required.  
 5. Save and refresh — **F1Race** will appear on your CloudPhone.
 
+#### License and credits
+**License**: MIT — see `LICENSE` file.  
+**Credits**: Game logic, UI, and assets in this repo by Tasmon Islam
