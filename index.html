@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>F1 Race CloudPhone</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="menu">
+    <h1>F1 Race</h1>
+    <button onclick="startGame()">Start Game</button>
+    <button onclick="showSettings()">Settings</button>
+    <button onclick="showHighScores()">High Scores</button>
+  </div>
+
+  <div id="settings" class="hidden">
+    <h2>Settings</h2>
+    <label>Lanes:
+      <select id="laneSelect">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </label>
+    <label>Level:
+      <select id="levelSelect">
+        <option value="1">Easy</option>
+        <option value="2">Medium</option>
+        <option value="3">Hard</option>
+      </select>
+    </label>
+    <button onclick="toggleMute()">Mute/Unmute</button>
+    <button onclick="backToMenu()">Back</button>
+  </div>
+
+  <div id="highscores" class="hidden">
+    <h2>High Scores</h2>
+    <ul id="scoreList"></ul>
+    <button onclick="backToMenu()">Back</button>
+  </div>
+
+  <canvas id="gameCanvas" width="240" height="320" class="hidden"></canvas>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
