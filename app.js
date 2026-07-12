@@ -144,15 +144,15 @@ function playSound(type) {
   oscillator.stop(ctxAudio.currentTime + 0.2);
 }
 
-// Keypad controls (T9)
+// Keypad controls (T9) — only when game is active
 document.addEventListener("keydown", e => {
-  // Prevent scrolling in menus
+  // If game not running, let buttons work normally
+  if (canvas.classList.contains("hidden")) return;
+
+  // Prevent scrolling during gameplay
   if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","2","4","6","8","5","1"].includes(e.key)) {
     e.preventDefault();
   }
-
-  // Only allow controls when game is visible
-  if (canvas.classList.contains("hidden")) return;
 
   const laneWidth = canvas.width / lanes;
   if (e.key === "4" && player.lane > 0) player.lane--;
