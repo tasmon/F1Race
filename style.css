@@ -1,49 +1,69 @@
 body {
+  font-family: 'Roboto', sans-serif;
   margin: 0;
-  padding: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #111;
-  color: #fff;
+  background: #fafafa;
+  text-align: center;
   width: 240px;
   height: 320px;
-  overflow: hidden; /* Prevent scrolling */
+  overflow: hidden;
+  position: relative;
 }
 
-.screen {
+header {
+  background: #6200ea;
+  color: white;
+  padding: 4px;
+  height: 40px;
+}
+
+header h2 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.page {
   width: 240px;
-  height: 320px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-h1, h2 {
-  margin: 10px 0;
-}
-
-button, select {
-  margin: 5px;
-  padding: 6px 12px;
-  font-size: 14px;
-  border: none;
-  border-radius: 6px;
-  background: linear-gradient(#444, #222);
-  color: #fff;
-  cursor: pointer;
-}
-
-button:hover {
-  background: linear-gradient(#666, #333);
-}
-
-.hidden {
+  height: 240px; /* strict canvas space */
   display: none;
 }
 
+.page.active {
+  display: block;
+}
+
+.md-btn {
+  background: #6200ea;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  margin: 5px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
 #gameCanvas {
-  background: #222;
   display: block;
   margin: 0 auto;
+  border: 2px solid #333;
+  background: #fff;
+}
+
+footer {
+  display: flex;
+  justify-content: space-around;
+  background: #eee;
+  padding: 4px;
+  position: absolute;
+  bottom: 0;
+  width: 240px;
+  height: 40px;
+}
+
+footer button {
+  flex: 1;
+  border: none;
+  background: #eee;
+  font-size: 14px;
+  padding: 6px;
 }
 
