@@ -1,10 +1,18 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI", Arial, sans-serif;
   background: #111;
   color: #fff;
-  text-align: center;
+}
+
+.screen {
+  width: 240px;
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 h1, h2 {
@@ -13,8 +21,17 @@ h1, h2 {
 
 button, select {
   margin: 5px;
-  padding: 5px 10px;
+  padding: 6px 12px;
   font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(#444, #222);
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  background: linear-gradient(#666, #333);
 }
 
 .hidden {
@@ -23,10 +40,8 @@ button, select {
 
 #gameCanvas {
   background: #222;
+  border: 2px solid #fff;
   display: block;
   margin: 0 auto;
-  border: 2px solid #fff;
-  width: 240px;
-  height: 320px;
 }
 
