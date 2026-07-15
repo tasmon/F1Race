@@ -1,4 +1,4 @@
-# F1Race for CloudPhone
+# F1 Race for CloudPhone
 
 A modern F1 racing game built for CloudPhone devices (240×320 resolution).  
 Features include multiple lanes (2–6), levels, high scores, mute/unmute, and T9 keypad controls (2,4,6,8).
@@ -11,7 +11,7 @@ Features include multiple lanes (2–6), levels, high scores, mute/unmute, and T
 3. Paste this Start URL:  
    `https://tasmon.github.io/F1Race`  
 4. Upload icons if required.  
-5. Save and refresh — **F1Race** will appear on your CloudPhone.
+5. Save and refresh — **F1 Race** will appear on your CloudPhone.
 
 #### License and credits
 **License**: MIT — see `LICENSE` file.  
